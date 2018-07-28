@@ -67,12 +67,10 @@ public class StrongerBar extends View {
     private boolean mIsVertical;
     private boolean mMovingColorBar;
     private boolean mMovingAlphaBar;
-    private boolean mRotatable = true;
+    private boolean mRotatable;
 
     private Bitmap mTransparentBitmap;
     private Bitmap mThumbBitmap;
-    private Bitmap mBubbleBitmap;
-    private Canvas mBubbleCanvas;
     private Canvas mThumbCanvas;
 
     private RectF mColorRect;
@@ -319,11 +317,6 @@ public class StrongerBar extends View {
         setAlphaValue();
         mMoveIntervalRate = MAX_PROGRESS_MOVE_TIME / mMaxPosition;
         mIndexQueue = new LinkedList<>();
-
-        if (mRotatable) {
-            mBubbleBitmap = Bitmap.createBitmap(mBubbleWidth, mBubbleHeight, Bitmap.Config.ARGB_8888);
-            mBubbleCanvas = new Canvas(mBubbleBitmap);
-        }
     }
 
     @Override
@@ -478,15 +471,6 @@ public class StrongerBar extends View {
         return testString;
     }
 
-    private void drawBubbleRectFAndText(Canvas canvas, String text) {
-        mColorPaint.setColor(Color.WHITE);
-        mTextPaint.setColor(Color.parseColor("#000000"));
-        canvas.drawRoundRect(mBubbleBoundsRectF, 12, 12, mColorPaint);
-        canvas.drawText(text, mBubbleBoundsRectF.left + (mBubbleBoundsRectF.width() - mBubbleBounds.width()) / 2,
-                mBubbleBoundsRectF.bottom - (mBubbleBoundsRectF.height() - mBubbleBounds.height()) / 2, mTextPaint);
-    }
-
-
     private void constructHorizontalBubbleRectF(float thumbX, float thumbY, boolean isTextAboveBar) {
         Log.i(TAG, "constructHorizontalBubbleRectF thumbX: " + thumbX + " ," + thumbY);
         int left = (int) (thumbX - mBubbleWidth / 2);
@@ -509,6 +493,25 @@ public class StrongerBar extends View {
         }
         int bottom = (int) -thumbX + mBubbleHeight / 2;
         mBubbleBoundsRectF.set(left, bottom - mBubbleHeight, left + mBubbleWidth, bottom);
+    }
+
+    private void drawBubbleRectFAndText(Canvas canvas, String text) {
+        mColorPaint.setColor(Color.WHITE);
+        mTextPaint.setColor(Color.parseColor("#000000"));
+        if ( mRotatable) {
+            float centerX = mBubbleBoundsRectF.centerX();
+            float centerY = mBubbleBoundsRectF.centerY();
+            canvas.translate(centerX, centerY);
+            canvas.rotate(360 - mCurrentDegree);
+            canvas.translate(- centerX, - centerY);
+            canvas.drawRoundRect(mBubbleBoundsRectF, 12, 12, mColorPaint);
+            canvas.drawText(text, mBubbleBoundsRectF.left + (mBubbleBoundsRectF.width() - mBubbleBounds.width()) / 2,
+                    mBubbleBoundsRectF.bottom - (mBubbleBoundsRectF.height() - mBubbleBounds.height()) / 2, mTextPaint);
+        } else {
+            canvas.drawRoundRect(mBubbleBoundsRectF, 12, 12, mColorPaint);
+            canvas.drawText(text, mBubbleBoundsRectF.left + (mBubbleBoundsRectF.width() - mBubbleBounds.width()) / 2,
+                    mBubbleBoundsRectF.bottom - (mBubbleBoundsRectF.height() - mBubbleBounds.height()) / 2, mTextPaint);
+        }
     }
 
     private Bitmap drawableToBitmap(int width, Drawable drawable) {
@@ -964,6 +967,7 @@ public class StrongerBar extends View {
 
     public void setOrientation(int degree, boolean animation) {
         mEnableAnimation = animation;
+        mRotatable = true;
         // make sure in the range of [0, 359]
         degree = degree >= 0 ? degree % 360 : degree % 360 + 360;
         if (degree == mTargetDegree) return;
@@ -1086,13 +1090,11 @@ public class StrongerBar extends View {
         return mCurrentPosition;
     }
 
-    public Bitmap rotateToDegrees(Bitmap tmpBitmap, float degrees) {
+    /*public Bitmap rotateToDegrees(Bitmap tmpBitmap, float degrees) {
         mMatrix.reset();
         mMatrix.setRotate(degrees);
         return Bitmap.createBitmap(tmpBitmap, 0, 0, tmpBitmap.getWidth(), tmpBitmap.getHeight(), mMatrix, true);
-    }
-
-
+    }*/
 
     private void drawRotateBitmap(Canvas canvas, Paint paint, Bitmap bitmap,
                                   float rotation, float posX, float posY) {
