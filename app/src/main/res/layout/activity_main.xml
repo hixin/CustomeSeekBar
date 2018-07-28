@@ -70,8 +70,8 @@
             app:textOffsideBar="false"
             app:showAlphaBar="false"
             app:textFacePath="fonts/BasicCommercialW01Bold.ttf"
-            app:thumbHeight="21.14dp"
-            app:thumbSrc="@drawable/bar1" />
+            app:thumbHeight="36dp"
+            app:thumbSrc="@drawable/red_iso" />
 
         <camera.cloudminds.com.strongbardemo.StrongerBar
             android:id="@+id/bar4"

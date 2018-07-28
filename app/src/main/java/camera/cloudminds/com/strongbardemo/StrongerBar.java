@@ -26,6 +26,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
 
 import java.util.ArrayList;
@@ -35,10 +36,6 @@ import java.util.List;
 
 public class StrongerBar extends View {
     private static final String TAG = "StrongerBar";
-    public static final int ORIENTATION_LEFT = 0;
-    public static final int ORIENTATION_RIGHT = 1;
-    public static final int ORIENTATION_TOP = 2;
-    public static final int ORIENTATION_BOTTOM = 3;
     private static final int MAX_PROGRESS_MOVE_TIME = 500;
     private static Matrix mMatrix;
     private int mBackgroundColor = 0x22222222;
@@ -49,6 +46,14 @@ public class StrongerBar extends View {
     private float mThumbRadius;
     private int mThumbHeight = 20;
     private int mBarHeight = 2;
+
+    private static final int ANIMATION_SPEED = 270; // 270 deg/sec
+    private int mCurrentDegree = 0; // [0, 359]
+    private int mStartDegree = 0;
+    private int mTargetDegree = 0;
+    private boolean mClockwise = false, mEnableAnimation = true;
+    private long mAnimationStartTime = 0;
+    private long mAnimationEndTime = 0;
 
     private OnStateChangeListener mOnStateChangeListener;
     private OnProgressChangedListener mOnProgressChangedListener;
@@ -62,9 +67,13 @@ public class StrongerBar extends View {
     private boolean mIsVertical;
     private boolean mMovingColorBar;
     private boolean mMovingAlphaBar;
+    private boolean mRotatable = true;
 
     private Bitmap mTransparentBitmap;
     private Bitmap mThumbBitmap;
+    private Bitmap mBubbleBitmap;
+    private Canvas mBubbleCanvas;
+    private Canvas mThumbCanvas;
 
     private RectF mColorRect;
     private RectF mSecondRect;
@@ -92,7 +101,6 @@ public class StrongerBar extends View {
     private int mCurrentPosition;
     private int mAlphaBarPosition;
     private int mBarMargin = 0;
-    //private int mPaddingSize;
     private int mViewWidth;
     private int mViewHeight;
     private int mAlphaMinPosition = 0;
@@ -101,7 +109,6 @@ public class StrongerBar extends View {
     private int mColorsToInvoke = -1;
     private boolean mInit = false;
     private boolean mFirstDraw = true;
-    private int aaaa = 3;
     private int mSencondColor;
     private String mTextFacePath;
     private int mFrameColor;
@@ -122,7 +129,6 @@ public class StrongerBar extends View {
     private float mMoveIntervalRate;
     private boolean mIsInAnimation = false;
     protected Context mContext;
-    private Canvas mBitmapCanvas;
     private int mRadiusX;
     private int mRadiusY;
     private boolean mTextAboveBar;
@@ -208,7 +214,7 @@ public class StrongerBar extends View {
 
         final Drawable d = a.getDrawable(R.styleable.StrongerBar_thumbSrc);
         if (d != null) {
-            mBitmapCanvas = new Canvas();
+            mThumbCanvas = new Canvas();
             mThumbBitmap = drawableToBitmap(mThumbHeight, d);
         }
 
@@ -285,8 +291,8 @@ public class StrongerBar extends View {
         Log.i(TAG, "init  getWidth(): " + getWidth() + " ,getHeight(): " + getHeight());
         int viewBottom = getHeight() - getPaddingBottom();
         int viewRight = getWidth() - getPaddingRight();
-        realLeft = mIsVertical ? getPaddingLeft() + mBubbleHeight / 2 : getPaddingLeft() + mBubbleWidth / 2;
-        realRight = mIsVertical ? viewBottom - mBubbleHeight / 2 : viewRight - mBubbleWidth / 2;
+        realLeft = mIsVertical ? getPaddingLeft() + Math.max(mThumbHeight, mBubbleHeight) / 2 : getPaddingLeft() + Math.max(mThumbHeight, mBubbleWidth) / 2;
+        realRight = mIsVertical ? viewBottom - Math.max(mThumbHeight, mBubbleHeight) / 2 : viewRight - Math.max(mThumbHeight, mBubbleWidth) / 2;
         realTop = mIsVertical ? getWidth() / 2 - mBarHeight / 2 : getHeight() / 2 - mBarHeight / 2;
         mBarWidth = realRight - realLeft;
 
@@ -308,10 +314,16 @@ public class StrongerBar extends View {
         mColorRectPaint.setShader(mColorGradient);
         mColorRectPaint.setAntiAlias(true);
         mMatrix = new Matrix();
+
         cacheColors();
         setAlphaValue();
         mMoveIntervalRate = MAX_PROGRESS_MOVE_TIME / mMaxPosition;
         mIndexQueue = new LinkedList<>();
+
+        if (mRotatable) {
+            mBubbleBitmap = Bitmap.createBitmap(mBubbleWidth, mBubbleHeight, Bitmap.Config.ARGB_8888);
+            mBubbleCanvas = new Canvas(mBubbleBitmap);
+        }
     }
 
     @Override
@@ -348,6 +360,7 @@ public class StrongerBar extends View {
         if (mIsVertical) {
             canvas.rotate(-90);
             canvas.translate(-getHeight(), 0);
+            updateOrientation();
         }
         mColorPaint.setAntiAlias(true);
         float colorPosition = (float) mCurrentPosition / mMaxPosition * mBarWidth;
@@ -381,8 +394,10 @@ public class StrongerBar extends View {
         float thumbY = mColorRect.top + mColorRect.height() / 2;
         mColorPaint.setColor(Color.BLACK);
 
-        Bitmap bitmap = mThumbBitmap;
-      /*  if (mOnStateChangeListener != null) {
+
+      /*
+      Bitmap bitmap = mThumbBitmap;
+      if (mOnStateChangeListener != null) {
             if (isEnabled()) {
                 bitmap = mOnStateChangeListener.onThumbNeedAnimation(mCurrentPosition, mMaxPosition, (int) mThumbRadius * 2, this);
             } else {
@@ -390,13 +405,13 @@ public class StrongerBar extends View {
             }
             bitmap = BitmapFactory.;
         }*/
-        if (bitmap != null) {
+        if (mThumbBitmap != null) {
             canvas.drawCircle(thumbX, thumbY, mThumbRadius, mClearPaint);
             if (mIsVertical) {
-                bitmap = rotateToDegrees(bitmap, -90);
-                canvas.drawBitmap(bitmap, thumbX - mThumbRadius, thumbY - mThumbRadius, mColorPaint);
+                Log.i(TAG, "onDraw mTargetDegree: " + mTargetDegree);
+                drawRotateBitmap(canvas, mColorPaint, mThumbBitmap, 360 - mCurrentDegree, thumbX - mThumbRadius, thumbY - mThumbRadius);
             } else {
-                canvas.drawBitmap(bitmap, thumbX - mThumbRadius, thumbY - mThumbRadius, mColorPaint);
+                canvas.drawBitmap(mThumbBitmap, thumbX - mThumbRadius, thumbY - mThumbRadius, mColorPaint);
             }
         }
         if (mIsShowBubble) {
@@ -465,11 +480,12 @@ public class StrongerBar extends View {
 
     private void drawBubbleRectFAndText(Canvas canvas, String text) {
         mColorPaint.setColor(Color.WHITE);
-        canvas.drawRoundRect(mBubbleBoundsRectF, 12, 12, mColorPaint);
         mTextPaint.setColor(Color.parseColor("#000000"));
+        canvas.drawRoundRect(mBubbleBoundsRectF, 12, 12, mColorPaint);
         canvas.drawText(text, mBubbleBoundsRectF.left + (mBubbleBoundsRectF.width() - mBubbleBounds.width()) / 2,
                 mBubbleBoundsRectF.bottom - (mBubbleBoundsRectF.height() - mBubbleBounds.height()) / 2, mTextPaint);
     }
+
 
     private void constructHorizontalBubbleRectF(float thumbX, float thumbY, boolean isTextAboveBar) {
         Log.i(TAG, "constructHorizontalBubbleRectF thumbX: " + thumbX + " ," + thumbY);
@@ -500,10 +516,15 @@ public class StrongerBar extends View {
                 width,
                 width,
                 Bitmap.Config.ARGB_8888);
-        mBitmapCanvas.setBitmap(null);
-        mBitmapCanvas.setBitmap(bitmap);
+        mThumbCanvas.setBitmap(null);
+        mThumbCanvas.setBitmap(bitmap);
         drawable.setBounds(0, 0, width, width);
-        drawable.draw(mBitmapCanvas);
+        if(mIsVertical) {
+            mThumbCanvas.translate(width/2, width/2);
+            mThumbCanvas.rotate(90);
+            mThumbCanvas.translate(-width/2, -width/2);
+        }
+        drawable.draw(mThumbCanvas);
         return bitmap;
     }
 
@@ -891,12 +912,6 @@ public class StrongerBar extends View {
             mOnStateChangeListener.onColorChangeListener(mCurrentPosition, mMaxPosition, getColor(), this);
     }
 
-//    public void setVertical(boolean vertical) {
-//        mIsVertical = vertical;
-//        refreshLayoutParams();
-//        invalidate();
-//    }
-
     private void refreshLayoutParams() {
         setLayoutParams(getLayoutParams());
     }
@@ -946,6 +961,49 @@ public class StrongerBar extends View {
         invalidate();
     }
 
+
+    public void setOrientation(int degree, boolean animation) {
+        mEnableAnimation = animation;
+        // make sure in the range of [0, 359]
+        degree = degree >= 0 ? degree % 360 : degree % 360 + 360;
+        if (degree == mTargetDegree) return;
+
+        mTargetDegree = degree;
+        if (mEnableAnimation) {
+            mStartDegree = mCurrentDegree;
+            mAnimationStartTime = AnimationUtils.currentAnimationTimeMillis();
+
+            int diff = mTargetDegree - mCurrentDegree;
+            diff = diff >= 0 ? diff : 360 + diff; // make it in range [0, 359]
+
+            // Make it in range [-179, 180]. That's the shorted distance between the
+            // two angles
+            diff = diff > 180 ? diff - 360 : diff;
+
+            mClockwise = diff >= 0;
+            mAnimationEndTime = mAnimationStartTime
+                    + Math.abs(diff) * 1000 / ANIMATION_SPEED;
+        } else {
+            mCurrentDegree = mTargetDegree;
+        }
+        invalidate();
+    }
+
+    private void updateOrientation() {
+        if (mCurrentDegree != mTargetDegree) {
+            long time = AnimationUtils.currentAnimationTimeMillis();
+            if (time < mAnimationEndTime) {
+                int deltaTime = (int) (time - mAnimationStartTime);
+                int degree = mStartDegree + ANIMATION_SPEED
+                        * (mClockwise ? deltaTime : -deltaTime) / 1000;
+                degree = degree >= 0 ? degree % 360 : degree % 360 + 360;
+                mCurrentDegree = degree;
+                invalidate();
+            } else {
+                mCurrentDegree = mTargetDegree;
+            }
+        }
+    }
     /**
      * Set the value of color bar, if out of bounds , it will be 0 or maxValue;
      *
@@ -1032,6 +1090,19 @@ public class StrongerBar extends View {
         mMatrix.reset();
         mMatrix.setRotate(degrees);
         return Bitmap.createBitmap(tmpBitmap, 0, 0, tmpBitmap.getWidth(), tmpBitmap.getHeight(), mMatrix, true);
+    }
+
+
+
+    private void drawRotateBitmap(Canvas canvas, Paint paint, Bitmap bitmap,
+                                  float rotation, float posX, float posY) {
+        mMatrix.reset();
+        int offsetX = bitmap.getWidth() / 2;
+        int offsetY = bitmap.getHeight() / 2;
+        mMatrix.postTranslate(-offsetX, -offsetY);
+        mMatrix.postRotate(rotation);
+        mMatrix.postTranslate(posX + offsetX, posY + offsetY);
+        canvas.drawBitmap(bitmap, mMatrix, paint);
     }
 
     public interface OnStateChangeListener {
