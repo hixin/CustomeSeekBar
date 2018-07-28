@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginStart="20dp"
+    android:background="@color/colorAccent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello World!" />
+
+    <camera.cloudminds.com.strongbardemo.StrongerBar
+        android:id="@+id/bar1"
+        android:layout_width="250.29dp"
+        android:layout_height="120.14dp"
+        android:layout_centerVertical="true"
+        app:barHeight="6.29dp"
+        app:bubbleHeight="26dp"
+        app:bubbleMargin="5dp"
+        app:bubbleWidth="40dp"
+        app:colorGradient="@array/contrast"
+        app:isShowBubble="true"
+        app:secondColor="@color/secondcolor"
+        app:showAlphaBar="false"
+        app:textFacePath="fonts/BasicCommercialW01Bold.ttf"
+        app:thumbHeight="21.14dp"
+        app:thumbSrc="@drawable/bar1" />
+
+    <camera.cloudminds.com.strongbardemo.StrongerBar
+        android:id="@+id/bar2"
+        android:layout_width="250.29dp"
+        android:layout_height="120.14dp"
+        android:layout_centerVertical="true"
+        app:barHeight="6.29dp"
+        app:bubbleHeight="26dp"
+        app:bubbleMargin="5dp"
+        app:bubbleWidth="40dp"
+        app:colorGradient="@array/contrast"
+        app:isShowBubble="true"
+        app:textAboveBar="false"
+        app:secondColor="@color/secondcolor"
+        app:showAlphaBar="false"
+        app:textFacePath="fonts/BasicCommercialW01Bold.ttf"
+        app:thumbHeight="21.14dp"
+        app:thumbSrc="@drawable/bar1" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="true"
+        android:orientation="horizontal">
+
+        <camera.cloudminds.com.strongbardemo.StrongerBar
+            android:id="@+id/bar3"
+            android:layout_width="140.14dp"
+            android:layout_height="250.29dp"
+            android:layout_centerVertical="true"
+            app:barHeight="6.29dp"
+            app:bubbleHeight="26dp"
+            app:bubbleMargin="5dp"
+            app:bubbleWidth="40dp"
+            app:colorGradient="@array/contrast"
+            app:isShowBubble="true"
+            app:isVertical="true"
+            app:textOffsideBar="false"
+            app:showAlphaBar="false"
+            app:textFacePath="fonts/BasicCommercialW01Bold.ttf"
+            app:thumbHeight="21.14dp"
+            app:thumbSrc="@drawable/bar1" />
+
+        <camera.cloudminds.com.strongbardemo.StrongerBar
+            android:id="@+id/bar4"
+            android:layout_width="140.14dp"
+            android:layout_height="250.29dp"
+            android:layout_centerVertical="true"
+            app:barHeight="6.29dp"
+            app:bubbleHeight="26dp"
+            app:bubbleMargin="5dp"
+            app:bubbleWidth="40dp"
+            app:secondColor="@color/secondcolor"
+            app:colorGradient="@array/contrast"
+            app:isShowBubble="true"
+            app:isVertical="true"
+            app:showAlphaBar="false"
+            app:textFacePath="fonts/BasicCommercialW01Bold.ttf"
+            app:thumbHeight="21.14dp"
+            app:thumbSrc="@drawable/bar1" />
+
+    </LinearLayout>
+
+</LinearLayout>
