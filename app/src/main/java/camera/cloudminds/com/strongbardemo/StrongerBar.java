@@ -28,7 +28,6 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,7 +38,7 @@ public class StrongerBar extends View {
     private static final int MAX_PROGRESS_MOVE_TIME = 500;
     private static Matrix mMatrix;
     private int mBackgroundColor = 0x22222222;
-    private int[] mColorSeeds = new int[]{0x30FFFFFF, 0xFF9900FF, 0xFF0000FF, 0xFF00FF00, 0xFF00FFFF, 0xFFFF0000, 0xFFFF00FF, 0xFFFF6600, 0xFFFFFF00, 0xFFFFFFFF, 0xFF000000};
+    private int[] mColorSeeds = new int[]{0x4DFFFFFF, 0xFF9900FF, 0xFF0000FF, 0xFF00FF00, 0xFF00FFFF, 0xFFFF0000, 0xFFFF00FF, 0xFFFF6600, 0xFFFFFF00, 0xFFFFFFFF, 0xFF000000};
     private int c0, c1, mAlpha, mRed, mGreen, mBlue;
     private int mTouchSlop;
     private float x, y;
@@ -64,7 +63,7 @@ public class StrongerBar extends View {
     private List<Integer> mColors = new ArrayList<>();
 
     private boolean mIsShowAlphaBar = false;
-    private boolean mIsVertical;
+    protected boolean mIsVertical;
     private boolean mMovingColorBar;
     private boolean mMovingAlphaBar;
     private boolean mRotatable;
@@ -217,7 +216,6 @@ public class StrongerBar extends View {
         mBubbleRadiusY = (int) a.getDimension(R.styleable.StrongerBar_bubbleRadiusY, 15);
         mTextAboveBar = a.getBoolean(R.styleable.StrongerBar_textAboveBar, true);
         mTextOnTheRightBar = a.getBoolean(R.styleable.StrongerBar_textOffsideBar, true);
-
         final Drawable d = a.getDrawable(R.styleable.StrongerBar_thumbSrc);
         if (d != null) {
             mThumbCanvas = new Canvas();
@@ -252,26 +250,7 @@ public class StrongerBar extends View {
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
         mClearPaint.setXfermode(new PorterDuffXfermode(android.graphics.PorterDuff.Mode.CLEAR));
         setBackgroundColor(mBackgroundColor);
-        initData();
-    }
 
-    private void initData() {
-        mBubbleMargin = dp2px(mBubbleMargin);
-    }
-
-    private Bitmap drawableToBitmap(Drawable drawable) {
-        Canvas canvas = new Canvas();
-        int intrinsicWidth = drawable.getIntrinsicWidth();
-        int intrinsicHeight = drawable.getIntrinsicHeight();
-        Bitmap bitmap = Bitmap.createBitmap(
-                intrinsicWidth,
-                intrinsicHeight,
-                Bitmap.Config.ARGB_8888);
-        canvas.setBitmap(bitmap);
-        drawable.setBounds(0, 0, intrinsicWidth, intrinsicHeight);
-        drawable.draw(canvas);
-
-        return bitmap;
     }
 
     private int[] getColorsById(int id) {
@@ -398,23 +377,22 @@ public class StrongerBar extends View {
         mColorPaint.setColor(Color.BLACK);
 
 
-      /*
-      Bitmap bitmap = mThumbBitmap;
-      if (mOnStateChangeListener != null) {
+
+        Bitmap bitmap = mThumbBitmap;
+        if (mOnStateChangeListener != null) {
             if (isEnabled()) {
                 bitmap = mOnStateChangeListener.onThumbNeedAnimation(mCurrentPosition, mMaxPosition, (int) mThumbRadius * 2, this);
             } else {
                 bitmap = mOnStateChangeListener.onDisableState(mCurrentPosition, mMaxPosition, (int) mThumbRadius * 2, this);
             }
-            bitmap = BitmapFactory.;
-        }*/
-        if (mThumbBitmap != null) {
+        }
+        if (bitmap != null) {
             canvas.drawCircle(thumbX, thumbY, mThumbRadius, mClearPaint);
             if (mIsVertical) {
                 Log.i(TAG, "onDraw mTargetDegree: " + mTargetDegree);
-                drawRotateBitmap(canvas, mColorPaint, mThumbBitmap, 360 - mCurrentDegree, thumbX - mThumbRadius, thumbY - mThumbRadius);
+                drawRotateBitmap(canvas, mColorPaint, bitmap, 360 - mCurrentDegree, thumbX - mThumbRadius, thumbY - mThumbRadius);
             } else {
-                canvas.drawBitmap(mThumbBitmap, thumbX - mThumbRadius, thumbY - mThumbRadius, mColorPaint);
+                canvas.drawBitmap(bitmap, thumbX - mThumbRadius, thumbY - mThumbRadius, mColorPaint);
             }
         }
         if (mIsShowBubble) {
@@ -474,9 +452,7 @@ public class StrongerBar extends View {
         if (!isEnabled()) {
             mTextPaint.setColor(Color.GRAY);
         }
-        if (mOnProgressChangedListener != null) {
-            testString = mOnProgressChangedListener.onBubbleTextNeedUpdate(mCurrentPosition, mMaxPosition, this);
-        }
+        testString = onBubbleTextNeedUpdate(mCurrentPosition, mMaxPosition);
         mTextPaint.getTextBounds(testString, 0, testString.length(), mBubbleBounds);
         return testString;
     }
@@ -1113,6 +1089,10 @@ public class StrongerBar extends View {
         canvas.drawBitmap(bitmap, mMatrix, paint);
     }
 
+    private String onBubbleTextNeedUpdate(int currentPosition, int maxProgress) {
+        return String.valueOf(currentPosition);
+    }
+
     public interface OnStateChangeListener {
         /**
          * @param colorBarPosition between 0-maxValue
@@ -1131,7 +1111,6 @@ public class StrongerBar extends View {
     public interface OnProgressChangedListener {
         // note: this is called only from user action.
         void onProgressChanged(int progress, View v);
-        String onBubbleTextNeedUpdate(int currentPosition, int maxProgress, StrongerBar strongerBar);
     }
 
     public interface OnInitDoneListener {

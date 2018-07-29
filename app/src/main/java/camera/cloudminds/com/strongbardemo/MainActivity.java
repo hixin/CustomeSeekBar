@@ -72,11 +72,6 @@ public class MainActivity extends AppCompatActivity implements StrongerBar.OnPro
         Log.i(TAG, "onProgressChanged: ");
     }
 
-    @Override
-    public String onBubbleTextNeedUpdate(int currentPosition, int maxProgress, StrongerBar strongerBar) {
-        return String.valueOf(currentPosition);
-    }
-
     public static int roundOrientation(int orientation, int orientationHistory) {
         boolean changeOrientation = false;//test
         if (orientationHistory == OrientationEventListener.ORIENTATION_UNKNOWN) {
