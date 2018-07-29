@@ -128,8 +128,10 @@ public class StrongerBar extends View {
     private float mMoveIntervalRate;
     private boolean mIsInAnimation = false;
     protected Context mContext;
-    private int mRadiusX;
-    private int mRadiusY;
+    private int mBarRadiusX;
+    private int mBarRadiusY;
+    private int mBubbleRadiusX;
+    private int mBubbleRadiusY;
     private boolean mTextAboveBar;
     private boolean mTextOnTheRightBar;
 
@@ -207,8 +209,10 @@ public class StrongerBar extends View {
         mBubbleWidth = (int) a.getDimension(R.styleable.StrongerBar_bubbleWidth, 0);
         mBubbleHeight = (int) a.getDimension(R.styleable.StrongerBar_bubbleHeight, 0);
         mBubbleTextSize = a.getInt(R.styleable.StrongerBar_bubbleTextSize, 20);
-        mRadiusX = (int) a.getDimension(R.styleable.StrongerBar_longAxisRadius, 15);
-        mRadiusY = (int) a.getDimension(R.styleable.StrongerBar_shortAxisRadius, 15);
+        mBarRadiusX = (int) a.getDimension(R.styleable.StrongerBar_barRadiusX, 15);
+        mBarRadiusY = (int) a.getDimension(R.styleable.StrongerBar_barRadiusY, 15);
+        mBubbleRadiusX = (int) a.getDimension(R.styleable.StrongerBar_bubbleRadiusX, 15);
+        mBubbleRadiusY = (int) a.getDimension(R.styleable.StrongerBar_bubbleRadiusY, 15);
         mTextAboveBar = a.getBoolean(R.styleable.StrongerBar_textAboveBar, true);
         mTextOnTheRightBar = a.getBoolean(R.styleable.StrongerBar_textOffsideBar, true);
 
@@ -373,7 +377,7 @@ public class StrongerBar extends View {
         int[] toAlpha = new int[]{colorStartTransparent, colorEndTransparent};
         //clear
         canvas.drawBitmap(mTransparentBitmap, 0, 0, null);
-        canvas.drawRoundRect(mColorRect, mRadiusX, mRadiusY, mColorRectPaint);
+        canvas.drawRoundRect(mColorRect, mBarRadiusX, mBarRadiusY, mColorRectPaint);
 
         float thumbX = colorPosition + realLeft;
         float v = thumbX < 0 ? 0 : thumbX;
@@ -383,7 +387,7 @@ public class StrongerBar extends View {
         if (mSencondColor != -1) {
             mColorPaint.setColor(mSencondColor);
             mSecondRect = new RectF(realLeft + mFrameWidth, realTop, (int) right - mFrameWidth, realTop + mBarHeight);
-            canvas.drawRoundRect(mSecondRect, mRadiusX, mRadiusY, mColorPaint);
+            canvas.drawRoundRect(mSecondRect, mBarRadiusX, mBarRadiusY, mColorPaint);
 
         }
 
@@ -429,7 +433,7 @@ public class StrongerBar extends View {
             alphaBarPaint.setAntiAlias(true);
             LinearGradient alphaBarShader = new LinearGradient(0, 0, mAlphaRect.width(), 0, toAlpha, null, Shader.TileMode.MIRROR);
             alphaBarPaint.setShader(alphaBarShader);
-            canvas.drawRoundRect(mAlphaRect, mRadiusX, mRadiusY, alphaBarPaint);
+            canvas.drawRoundRect(mAlphaRect, mBarRadiusX, mBarRadiusY, alphaBarPaint);
 
             float alphaPosition = (float) (mAlphaBarPosition - mAlphaMinPosition) / (mAlphaMaxPosition - mAlphaMinPosition) * mBarWidth;
             float alphaThumbX = alphaPosition + realLeft;
@@ -507,11 +511,11 @@ public class StrongerBar extends View {
             canvas.translate(centerX, centerY);
             canvas.rotate(360 - mCurrentDegree);
             canvas.translate(- centerX, - centerY);
-            canvas.drawRoundRect(mBubbleBoundsRectF, 12, 12, mColorPaint);
+            canvas.drawRoundRect(mBubbleBoundsRectF, mBubbleRadiusX, mBubbleRadiusY, mColorPaint);
             canvas.drawText(text, mBubbleBoundsRectF.left + (mBubbleBoundsRectF.width() - mBubbleBounds.width()) / 2,
                     mBubbleBoundsRectF.bottom - (mBubbleBoundsRectF.height() - mBubbleBounds.height()) / 2, mTextPaint);
         } else {
-            canvas.drawRoundRect(mBubbleBoundsRectF, 12, 12, mColorPaint);
+            canvas.drawRoundRect(mBubbleBoundsRectF, mBubbleRadiusX, mBubbleRadiusY, mColorPaint);
             canvas.drawText(text, mBubbleBoundsRectF.left + (mBubbleBoundsRectF.width() - mBubbleBounds.width()) / 2,
                     mBubbleBoundsRectF.bottom - (mBubbleBoundsRectF.height() - mBubbleBounds.height()) / 2, mTextPaint);
         }

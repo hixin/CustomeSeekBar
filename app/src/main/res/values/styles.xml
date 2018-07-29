@@ -35,8 +35,10 @@
         <attr name="ColorChangeCallBack" format="boolean" />
         <attr name="thumbBitmapFixed" format="reference"/>
         <attr name="thumbSrc" format="reference|color"/>
-        <attr name="longAxisRadius" format="dimension"/>
-        <attr name="shortAxisRadius" format="dimension"/>
+        <attr name="barRadiusX" format="dimension"/>
+        <attr name="barRadiusY" format="dimension"/>
+        <attr name="bubbleRadiusX" format="dimension"/>
+        <attr name="bubbleRadiusY" format="dimension"/>
 
     </declare-styleable>
 
