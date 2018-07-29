@@ -464,8 +464,8 @@ public class StrongerBar extends View {
         if (!isEnabled()) {
             mTextPaint.setColor(Color.GRAY);
         }
-        if (mOnStateChangeListener != null) {
-            testString = mOnStateChangeListener.onBubbleTextNeedUpdate(mCurrentPosition, mMaxPosition, this);
+        if (mOnProgressChangedListener != null) {
+            testString = mOnProgressChangedListener.onBubbleTextNeedUpdate(mCurrentPosition, mMaxPosition, this);
         }
         mTextPaint.getTextBounds(testString, 0, testString.length(), mBubbleBounds);
         return testString;
@@ -864,10 +864,6 @@ public class StrongerBar extends View {
         this.mOnProgressChangedListener = onProgressChangedListener;
     }
 
-    public void setOnBarChangeListener(SimpleOnBarChangeListener simpleOnBarChangeListener) {
-        this.mOnStateChangeListener = simpleOnBarChangeListener;
-        this.mOnProgressChangedListener = simpleOnBarChangeListener;
-    }
 
     public int dp2px(float dpValue) {
         final float scale = mContext.getResources().getDisplayMetrics().density;
@@ -1117,8 +1113,6 @@ public class StrongerBar extends View {
 
         Bitmap onThumbNeedAnimation(int currentPosition, int maxProgress, int radius, StrongerBar strongerBar);
 
-        String onBubbleTextNeedUpdate(int currentPosition, int maxProgress, StrongerBar strongerBar);
-
         Bitmap onDisableState(int mCurrentPosition, int mMaxPosition, int i, StrongerBar strongerBar);
 
         void onLongPress(StrongerBar strongerBar);
@@ -1127,44 +1121,13 @@ public class StrongerBar extends View {
     public interface OnProgressChangedListener {
         // note: this is called only from user action.
         void onProgressChanged(int progress, View v);
+        String onBubbleTextNeedUpdate(int currentPosition, int maxProgress, StrongerBar strongerBar);
     }
 
     public interface OnInitDoneListener {
         void done();
     }
 
-    public static class SimpleOnBarChangeListener implements OnStateChangeListener, OnProgressChangedListener {
-
-        @Override
-        public void onColorChangeListener(int colorBarPosition, int maxPosition, int color, StrongerBar strongerBar) {
-
-        }
-
-        @Override
-        public Bitmap onThumbNeedAnimation(int currentPosition, int maxProgress, int radius, StrongerBar strongerBar) {
-            return null;
-        }
-
-        @Override
-        public String onBubbleTextNeedUpdate(int currentPosition, int maxProgress, StrongerBar strongerBar) {
-            return null;
-        }
-
-        @Override
-        public Bitmap onDisableState(int mCurrentPosition, int mMaxPosition, int i, StrongerBar strongerBar) {
-            return null;
-        }
-
-        @Override
-        public void onLongPress(StrongerBar strongerBar) {
-
-        }
-
-        @Override
-        public void onProgressChanged(int progress, View v) {
-
-        }
-    }
 
     private Typeface getTypeface(String path) {
         Typeface mTypeface;
