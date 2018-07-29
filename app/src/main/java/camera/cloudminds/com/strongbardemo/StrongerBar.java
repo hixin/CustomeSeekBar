@@ -112,6 +112,7 @@ public class StrongerBar extends View {
     private String mTextFacePath;
     private int mFrameColor;
     private int mFrameWidth;
+    private int mBubbleColor;
     private int mBubbleMargin;
     private int mBubbleWidth;
     private int mBubbleHeight;
@@ -209,6 +210,7 @@ public class StrongerBar extends View {
         mBubbleWidth = (int) a.getDimension(R.styleable.StrongerBar_bubbleWidth, 0);
         mBubbleHeight = (int) a.getDimension(R.styleable.StrongerBar_bubbleHeight, 0);
         mBubbleTextSize = a.getInt(R.styleable.StrongerBar_bubbleTextSize, 20);
+        mBubbleColor = a.getColor(R.styleable.StrongerBar_bubbleColor,  0x99FFFFFF);
         mBarRadiusX = (int) a.getDimension(R.styleable.StrongerBar_barRadiusX, 15);
         mBarRadiusY = (int) a.getDimension(R.styleable.StrongerBar_barRadiusY, 15);
         mBubbleRadiusX = (int) a.getDimension(R.styleable.StrongerBar_bubbleRadiusX, 15);
@@ -234,12 +236,13 @@ public class StrongerBar extends View {
         mOrientation = b.getInt(R.styleable.StrongerBarOrientation_rotation, -1);
 
         b.recycle();
-        if (colorsId != 0) mColorSeeds = getColorsById(colorsId);
-
-        if (mColorSeeds.length == 1) {
+        if (colorsId != 0) {
+            mColorSeeds = getColorsById(colorsId);
+        } else {
             mColorSeeds = new int[]{mColorSeeds[0], mColorSeeds[0]};
             mColorChangeCallBack = false;
         }
+
         mColorPaint = new Paint();
         mClearPaint = new Paint();
         mColorRectPaint = new Paint();
@@ -384,7 +387,7 @@ public class StrongerBar extends View {
         float right = v > realRight ? realRight : v;
         mPreviousPointer = right - mFrameWidth;
         Log.i(TAG, "onDraw mPreviousPointer: " + mPreviousPointer);
-        if (mSencondColor != -1) {
+        if (mSencondColor != Color.TRANSPARENT) {
             mColorPaint.setColor(mSencondColor);
             mSecondRect = new RectF(realLeft + mFrameWidth, realTop, (int) right - mFrameWidth, realTop + mBarHeight);
             canvas.drawRoundRect(mSecondRect, mBarRadiusX, mBarRadiusY, mColorPaint);
@@ -503,7 +506,7 @@ public class StrongerBar extends View {
     }
 
     private void drawBubbleRectFAndText(Canvas canvas, String text) {
-        mColorPaint.setColor(Color.WHITE);
+        mColorPaint.setColor(mBubbleColor);
         mTextPaint.setColor(Color.parseColor("#000000"));
         if ( mRotatable) {
             float centerX = mBubbleBoundsRectF.centerX();
