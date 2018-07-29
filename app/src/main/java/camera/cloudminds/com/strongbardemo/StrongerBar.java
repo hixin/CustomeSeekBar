@@ -68,6 +68,7 @@ public class StrongerBar extends View {
     private boolean mMovingColorBar;
     private boolean mMovingAlphaBar;
     private boolean mRotatable;
+    private boolean mOffSet;
 
     private Bitmap mTransparentBitmap;
     private Bitmap mThumbBitmap;
@@ -196,6 +197,7 @@ public class StrongerBar extends View {
         mBarHeight = (int) a.getDimension(R.styleable.StrongerBar_barHeight, (float) dp2px(2));
         mThumbHeight = (int) a.getDimension(R.styleable.StrongerBar_thumbHeight, (float) dp2px(30));
         mBarMargin = (int) a.getDimension(R.styleable.StrongerBar_barMargin, (float) dp2px(0));
+        mOffSet = a.getBoolean(R.styleable.StrongerBar_offset, true);
         mIsShowBubble = a.getBoolean(R.styleable.StrongerBar_isShowBubble, false);
         mColorChangeCallBack = a.getBoolean(R.styleable.StrongerBar_ColorChangeCallBack, false);
         mTextFacePath = a.getString(R.styleable.StrongerBar_textFacePath);
@@ -356,7 +358,8 @@ public class StrongerBar extends View {
             updateOrientation();
         }
         mColorPaint.setAntiAlias(true);
-        float colorPosition = (float) mCurrentPosition / mMaxPosition * mBarWidth;
+        float colorPosition = (float) mCurrentPosition / mMaxPosition * (mOffSet ? mBarWidth - mThumbRadius * 2 : mBarWidth);
+        colorPosition = mOffSet ? colorPosition + mThumbRadius : colorPosition;
         Log.i(TAG, "onDraw colorPosition: " + colorPosition);
         int color = getColor(false);
         int colorStartTransparent = Color.argb(mAlphaMaxPosition, Color.red(color), Color.green(color), Color.blue(color));
@@ -575,7 +578,7 @@ public class StrongerBar extends View {
                 }
                 getParent().requestDisallowInterceptTouchEvent(true);
                 if (mMovingColorBar) {
-                    float value = (x - realLeft) / mBarWidth * mMaxPosition;
+                    float value = (x - realLeft - (mOffSet ? mThumbRadius : 0)) / (mBarWidth - (mOffSet ? mThumbRadius * 2 : 0)) * mMaxPosition;
                     mCurrentPosition = (int) value;
                     Log.i(TAG, "onTouchEvent ACTION_MOVE mCurrentPosition: " + mCurrentPosition);
                     if (mCurrentPosition < 0) mCurrentPosition = 0;

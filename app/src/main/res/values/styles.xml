@@ -18,6 +18,7 @@
         <attr name="currentPosition" format="integer" />
         <attr name="bgColor" format="color" />
         <attr name="barMargin" format="dimension" />
+        <attr name="offset" format="boolean" />
         <attr name="maxPosition" format="integer" />
         <attr name="isVertical" format="boolean" />
         <attr name="textAboveBar" format="boolean" />
