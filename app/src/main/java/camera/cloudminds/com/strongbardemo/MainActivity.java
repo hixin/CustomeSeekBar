@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements StrongerBar.OnPro
             if (mOrientation != mLastRawOrientation) {
                 mLastRawOrientation = mOrientation;
                 adjust3.setOrientation(mOrientation, true);
+                adjust4.setOrientation(mOrientation, true);
             }
         }
     }

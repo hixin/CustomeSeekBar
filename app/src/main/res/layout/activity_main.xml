@@ -31,23 +31,21 @@
         app:thumbHeight="21.14dp"
         app:thumbSrc="@drawable/bar1" />
 
-    <camera.cloudminds.com.strongbardemo.StrongerBar
+    <camera.cloudminds.com.strongbardemo.ShutterSpeedSeekBar
         android:id="@+id/bar2"
-        android:layout_width="250.29dp"
-        android:layout_height="120.14dp"
-        android:layout_centerVertical="true"
-        app:barHeight="6.29dp"
+        android:layout_width="185dp"
+        android:layout_height="68dp"
+        app:barHeight="6dp"
         app:bubbleHeight="26dp"
+        app:bubbleWidth="54.3dp"
         app:bubbleMargin="5dp"
-        app:bubbleWidth="40dp"
-        app:colorGradient="@array/contrast"
-        app:isShowBubble="true"
-        app:textAboveBar="false"
-        app:secondColor="@color/secondcolor"
+        app:bubbleTextSize="14"
+        app:currentPosition="50"
+        app:offset="true"
+        app:textOffsideBar="false"
         app:showAlphaBar="false"
         app:textFacePath="fonts/BasicCommercialW01Bold.ttf"
-        app:thumbHeight="21.14dp"
-        app:thumbSrc="@drawable/bar1" />
+        app:thumbHeight="36dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -73,23 +71,22 @@
             app:thumbHeight="36dp"
             app:thumbSrc="@drawable/red_iso" />
 
-        <camera.cloudminds.com.strongbardemo.StrongerBar
+        <camera.cloudminds.com.strongbardemo.ShutterSpeedSeekBar
             android:id="@+id/bar4"
-            android:layout_width="140.14dp"
-            android:layout_height="250.29dp"
-            android:layout_centerVertical="true"
-            app:barHeight="6.29dp"
+            android:layout_width="68dp"
+            android:layout_height="185dp"
+            app:barHeight="6dp"
             app:bubbleHeight="26dp"
+            app:bubbleWidth="54.3dp"
             app:bubbleMargin="5dp"
-            app:bubbleWidth="40dp"
-            app:secondColor="@color/secondcolor"
-            app:colorGradient="@array/contrast"
-            app:isShowBubble="true"
+            app:bubbleTextSize="14"
+            app:currentPosition="50"
             app:isVertical="true"
+            app:offset="true"
+            app:textOffsideBar="false"
             app:showAlphaBar="false"
             app:textFacePath="fonts/BasicCommercialW01Bold.ttf"
-            app:thumbHeight="21.14dp"
-            app:thumbSrc="@drawable/bar1" />
+            app:thumbHeight="36dp" />
 
     </LinearLayout>
 

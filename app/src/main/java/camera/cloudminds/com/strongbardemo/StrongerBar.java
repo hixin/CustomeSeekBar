@@ -1089,7 +1089,7 @@ public class StrongerBar extends View {
         canvas.drawBitmap(bitmap, mMatrix, paint);
     }
 
-    private String onBubbleTextNeedUpdate(int currentPosition, int maxProgress) {
+    public String onBubbleTextNeedUpdate(int currentPosition, int maxProgress) {
         return String.valueOf(currentPosition);
     }
 
