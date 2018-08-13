@@ -134,6 +134,7 @@ public class StrongerBar extends View {
     private int mBubbleRadiusY;
     private boolean mTextAboveBar;
     private boolean mTextOnTheRightBar;
+    private boolean mThumbChanged;
 
     public StrongerBar(Context context) {
         super(context);
@@ -198,6 +199,7 @@ public class StrongerBar extends View {
         mSencondColor = a.getColor(R.styleable.StrongerBar_secondColor, Color.TRANSPARENT);
         mBarHeight = (int) a.getDimension(R.styleable.StrongerBar_barHeight, (float) dp2px(2));
         mThumbHeight = (int) a.getDimension(R.styleable.StrongerBar_thumbHeight, (float) dp2px(30));
+        mThumbChanged = a.getBoolean(R.styleable.StrongerBar_thumbChanged, false);
         mBarMargin = (int) a.getDimension(R.styleable.StrongerBar_barMargin, (float) dp2px(0));
         mOffSet = a.getBoolean(R.styleable.StrongerBar_offset, true);
         mIsShowBubble = a.getBoolean(R.styleable.StrongerBar_isShowBubble, false);
@@ -379,13 +381,14 @@ public class StrongerBar extends View {
 
 
         Bitmap bitmap = mThumbBitmap;
-        if (mOnStateChangeListener != null) {
+        if (mThumbChanged) {
             if (isEnabled()) {
-                bitmap = mOnStateChangeListener.onThumbNeedAnimation(mCurrentPosition, mMaxPosition, (int) mThumbRadius * 2, this);
+                bitmap = onThumbNeedAnimation(mCurrentPosition, mMaxPosition, (int) mThumbRadius * 2);
             } else {
-                bitmap = mOnStateChangeListener.onDisableState(mCurrentPosition, mMaxPosition, (int) mThumbRadius * 2, this);
+                bitmap = onDisableState(mCurrentPosition, mMaxPosition, (int) mThumbRadius * 2);
             }
         }
+
         if (bitmap != null) {
             canvas.drawCircle(thumbX, thumbY, mThumbRadius, mClearPaint);
             if (mIsVertical) {
@@ -1093,6 +1096,14 @@ public class StrongerBar extends View {
         return String.valueOf(currentPosition);
     }
 
+    public Bitmap onThumbNeedAnimation(int currentPosition, int maxProgress, int radius) {
+        return mThumbBitmap;
+    }
+
+    public Bitmap onDisableState(int mCurrentPosition, int mMaxPosition, int radius) {
+        return mThumbBitmap;
+    }
+
     public interface OnStateChangeListener {
         /**
          * @param colorBarPosition between 0-maxValue
@@ -1100,11 +1111,6 @@ public class StrongerBar extends View {
          * @param color            return the color contains alpha value whether showAlphaBar is true or without alpha value
          */
         void onColorChangeListener(int colorBarPosition, int maxPosition, int color, StrongerBar strongerBar);
-
-        Bitmap onThumbNeedAnimation(int currentPosition, int maxProgress, int radius, StrongerBar strongerBar);
-
-        Bitmap onDisableState(int mCurrentPosition, int mMaxPosition, int i, StrongerBar strongerBar);
-
         void onLongPress(StrongerBar strongerBar);
     }
 

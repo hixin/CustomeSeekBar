@@ -7,18 +7,15 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-/**
- * Created by vensent on 11/20/17.
- */
 
-public class ShutterSpeedSeekBar extends StrongerBar implements StrongerBar.OnStateChangeListener{
+public class ShutterSpeedSeekBar extends StrongerBar{
     private Drawable mShutterPointer;
     private Drawable mShutter;
     private Canvas mCanvas;
     private Resources mRes;
     private static int SHUTTERPOINT_WIDTH = 8;
     private static int SHUTTERPOINT_HEIGHT = 55;
-
+    public static final String[] SHUTTER_SPEED_VALUE = {"1", "1/2", "1/4", "1/8", "1/15", "1/24", "1/25", "1/30", "1/48", "1/50", "1/60", "1/125", "1/250", "1/500", "1/1000"};
     public ShutterSpeedSeekBar(Context context) {
         this(context, null);
     }
@@ -37,7 +34,6 @@ public class ShutterSpeedSeekBar extends StrongerBar implements StrongerBar.OnSt
         mCanvas = new Canvas();
         mShutter = mRes.getDrawable(R.drawable.red_shutter);
         mShutterPointer = mRes.getDrawable(R.drawable.shutter_pointer);
-        setOnStateChangeListener(this);
     }
 
     public Bitmap getThumbBitMap(int max, int progress, int width, boolean enabled) {
@@ -60,7 +56,6 @@ public class ShutterSpeedSeekBar extends StrongerBar implements StrongerBar.OnSt
         if (range >= 175) {
             range = 175;
         }
-        mCanvas.setBitmap(null);
         mCanvas.setBitmap(bitmap);
         bg.setBounds(0, 0, width, width);
         if (mIsVertical) {
@@ -83,12 +78,7 @@ public class ShutterSpeedSeekBar extends StrongerBar implements StrongerBar.OnSt
     }
 
     @Override
-    public void onColorChangeListener(int colorBarPosition, int maxPosition, int color, StrongerBar strongerBar) {
-
-    }
-
-    @Override
-    public Bitmap onThumbNeedAnimation(int currentPosition, int maxProgress, int radius, StrongerBar strongerBar) {
+    public Bitmap onThumbNeedAnimation(int currentPosition, int maxProgress, int radius) {
         return getThumbBitMap(maxProgress, currentPosition, radius, true);
     }
 
@@ -98,11 +88,7 @@ public class ShutterSpeedSeekBar extends StrongerBar implements StrongerBar.OnSt
     }
 
     @Override
-    public void onLongPress(StrongerBar strongerBar) {
-    }
-
-    @Override
-    public Bitmap onDisableState(int currentPosition, int maxProgress, int radius, StrongerBar strongerBar) {
-        return getThumbBitMap(maxProgress, currentPosition, radius, false);
+    public String onBubbleTextNeedUpdate(int currentPosition, int maxProgress) {
+        return SHUTTER_SPEED_VALUE[getIndexFromProgress(currentPosition)];
     }
 }

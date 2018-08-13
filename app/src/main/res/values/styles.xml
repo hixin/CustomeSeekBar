@@ -36,6 +36,7 @@
         <attr name="ColorChangeCallBack" format="boolean" />
         <attr name="thumbBitmapFixed" format="reference"/>
         <attr name="thumbSrc" format="reference|color"/>
+        <attr name="thumbChanged" format="boolean"/>
         <attr name="barRadiusX" format="dimension"/>
         <attr name="barRadiusY" format="dimension"/>
         <attr name="bubbleRadiusX" format="dimension"/>
