@@ -56,6 +56,7 @@ public class ShutterSpeedSeekBar extends StrongerBar{
         if (range >= 175) {
             range = 175;
         }
+        mCanvas.setBitmap(null);
         mCanvas.setBitmap(bitmap);
         bg.setBounds(0, 0, width, width);
         if (mIsVertical) {
